@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.FsSeriesMapper">
+    <resultMap id="BaseResultMap" type="com.example.demo.module.FsSeries">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="thumbnail" property="thumbnail"/>
+        <result column="type" property="type"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="isDelete" property="isDelete"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, title, summary, content, img, num, createTime, updateTime, isDelete
+    </sql>
+
+    <!--  查询所有作品  -->
+    <select id="getAllSeries" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM fs_series
+        where isDelete = 0
+    </select>
+
+    <!--  根据类型查询作品  -->
+    <select id="getSeriesByType" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM fs_series
+        where isDelete = 0 AND type = #{type}
+    </select>
+</mapper>
