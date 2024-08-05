@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ArticleMapper">
+    <resultMap id="BaseResultMap" type="com.example.demo.module.Article">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="summary" property="summary"/>
+        <result column="content" property="content"/>
+        <result column="img" property="img"/>
+        <result column="num" property="num"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="isDelete" property="isDelete"/>
+        <result column="user" property="userName"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, title, summary, content, img, num, createTime, updateTime, isDelete
+    </sql>
+
+    <sql id="Base_Column_List1">
+        id, title, summary, img, num, createTime, updateTime
+    </sql>
+
+    <select id="getAllArticle" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List1"/>
+        FROM article where isDelete = 0 AND user = #{userName}
+    </select>
+
+    <select id="getArticleById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM article where id = #{id} and isDelete = 0 AND user = #{userName}
+    </select>
+
+    <update id="updateArticle">
+        UPDATE article
+        SET title = #{title}, summary = #{summary}, content = #{content}, img = #{img}
+        WHERE id = #{id} AND isDelete = 0 AND user = #{userName}
+    </update>
+
+    <insert id="createArticle">
+        INSERT INTO article (title, summary, content, img, user)
+        VALUES (#{title}, #{summary}, #{content}, #{img}, #{userName})
+    </insert>
+
+    <delete id="deleteArticle">
+        UPDATE article
+        SET isDelete = 1
+        WHERE id = #{id} AND isDelete = 0 AND user = #{userName}
+    </delete>
+</mapper>
