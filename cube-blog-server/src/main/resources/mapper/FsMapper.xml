@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.demo.mapper.FsSeriesMapper">
+<mapper namespace="com.example.demo.mapper.FsMapper">
+
     <resultMap id="BaseResultMap" type="com.example.demo.module.FsSeries">
         <id column="id" property="id"/>
         <result column="title" property="title"/>
@@ -11,11 +12,9 @@
         <result column="updateTime" property="updateTime"/>
         <result column="isDelete" property="isDelete"/>
     </resultMap>
-
     <sql id="Base_Column_List">
         id, title, summary, content, img, num, createTime, updateTime, isDelete
     </sql>
-
     <!--  查询所有作品  -->
     <select id="getAllSeries" resultMap="BaseResultMap">
         SELECT
@@ -23,12 +22,48 @@
         FROM fs_series
         where isDelete = 0
     </select>
-
     <!--  根据类型查询作品  -->
     <select id="getSeriesByType" resultMap="BaseResultMap">
         SELECT
         *
         FROM fs_series
         where isDelete = 0 AND type = #{type}
+    </select>
+    <resultMap id="SeriesResultMap" type="com.example.demo.module.FsSeries">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="thumbnail" property="thumbnail"/>
+        <result column="type" property="type"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="isDelete" property="isDelete"/>
+        <collection property="episodes" ofType="com.example.demo.module.FsEpisodes" column="id" select="getEpisodesBySeriesId"/>
+    </resultMap>
+    <!-- 根据作品ID查询作品及其剧集 -->
+    <select id="getSeriesById" resultMap="SeriesResultMap">
+        SELECT id, title, description, thumbnail, type, createTime, updateTime, isDelete
+        FROM fs_series
+        WHERE id = #{seriesId} AND isDelete = 0
+    </select>
+
+
+    <!-- 根据作品id查询其全部的剧集，并关联查询其目录 -->
+    <resultMap id="EpisodeResultMap" type="com.example.demo.module.FsEpisodes">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="thumbnail" property="thumbnail"/>
+        <result column="file_name" property="file_name"/>
+        <result column="episode_number" property="episode_number"/>
+        <result column="directoryPath" property="directoryPath"/>
+    </resultMap>
+    <!--  根据作品id查询其全部的剧集，并关联查询其目录  -->
+    <select id="getEpisodesBySeriesId" resultMap="EpisodeResultMap">
+        SELECT e.id, e.title, e.description, e.thumbnail, e.file_name, e.episode_number, d.path as directory_path
+        FROM fs_episodes e
+        JOIN fs_directories d ON e.directory_id = d.id
+        WHERE e.series_id = #{seriesId}
+        ORDER BY e.episode_number;
     </select>
 </mapper>
